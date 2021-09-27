@@ -1,0 +1,214 @@
+mysql> create database people;
+Query OK, 1 row affected (0.03 sec)
+
+mysql> use people;
+Database changed
+mysql> create table peoplelist(id int,name varchar(10),age int);
+Query OK, 0 rows affected (0.09 sec)
+
+mysql> desc peoplelist;
++-------+-------------+------+-----+---------+-------+
+| Field | Type        | Null | Key | Default | Extra |
++-------+-------------+------+-----+---------+-------+
+| id    | int         | YES  |     | NULL    |       |
+| name  | varchar(10) | YES  |     | NULL    |       |
+| age   | int         | YES  |     | NULL    |       |
++-------+-------------+------+-----+---------+-------+
+3 rows in set (0.01 sec)
+
+mysql> insert into peoplelist values(11,"Saravana",24),(12,"Kumar",22),(13,"Afan",25),(14,"Gubra",26),(15,"Naresh",28);
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> select * from peoplelist;
++------+----------+------+
+| id   | name     | age  |
++------+----------+------+
+|   11 | Saravana |   24 |
+|   12 | Kumar    |   22 |
+|   13 | Afan     |   25 |
+|   14 | Gubra    |   26 |
+|   15 | Naresh   |   28 |
++------+----------+------+
+5 rows in set (0.00 sec)
+
+mysql> DELIMITER $$
+mysql> CREATE PROCEDURE count_peoplelist()
+    -> begin
+    -> Select count(id)from peoplelist;
+    -> end $$
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> DELIMITER :
+mysql> CALL Count_peoplelist:
++-----------+
+| count(id) |
++-----------+
+|         5 |
++-----------+
+1 row in set (0.00 sec)
+
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> Show  procedure status like '%people%'\G
+*************************** 1. row ***************************
+                  Db: mydb
+                Name: count_people
+                Type: PROCEDURE
+             Definer: root@localhost
+            Modified: 2021-09-27 12:20:26
+             Created: 2021-09-27 12:20:26
+       Security_type: DEFINER
+             Comment: 
+character_set_client: utf8mb4
+collation_connection: utf8mb4_0900_ai_ci
+  Database Collation: utf8mb4_0900_ai_ci
+*************************** 2. row ***************************
+                  Db: people
+                Name: count_peoplelist
+                Type: PROCEDURE
+             Definer: root@localhost
+            Modified: 2021-09-27 13:36:17
+             Created: 2021-09-27 13:36:17
+       Security_type: DEFINER
+             Comment: 
+character_set_client: utf8mb4
+collation_connection: utf8mb4_0900_ai_ci
+  Database Collation: utf8mb4_0900_ai_ci
+2 rows in set (0.01 sec)
+
+mysql> Show  procedure status like '%list%'\G
+*************************** 1. row ***************************
+                  Db: people
+                Name: count_peoplelist
+                Type: PROCEDURE
+             Definer: root@localhost
+            Modified: 2021-09-27 13:36:17
+             Created: 2021-09-27 13:36:17
+       Security_type: DEFINER
+             Comment: 
+character_set_client: utf8mb4
+collation_connection: utf8mb4_0900_ai_ci
+  Database Collation: utf8mb4_0900_ai_ci
+1 row in set (0.00 sec)
+
+mysql> DELIMITER $$
+mysql> CREATE PROCEDURE get_personlist(IN p_id SMALLINT)
+    -> begin
+    -> select * from personlist where id=id;
+    -> end $$
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> DELIMITER :
+mysql> call procedure personlist(13);
++------+----------+------+
+| id   | name     | age  |
++------+----------+------+
+|   11 | Saravana |   24 |
+|   12 | Kumar    |   22 |
+|   13 | Afan     |   25 |
+|   14 | Gubra    |   26 |
+|   15 | Naresh   |   28 |
++------+----------+------+
+5 rows in set (0.00 sec)
+
+Query OK, 0 rows affected (0.00 sec)
+mysql> DELIMITER :
+mysql> call get_people1(13):
+ERROR 1146 (42S02): Table 'people.people1' doesn't exist
+mysql> DELIMITER $$
+mysql> CREATE PROCEDURE get_people2(IN id SMALLINT) begin select * from peoplelist where id=id; end$$
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> DELIMITER :
+mysql> call get_people2(13):
++------+----------+------+
+| id   | name     | age  |
++------+----------+------+
+|   11 | Saravana |   24 |
+|   12 | Kumar    |   22 |
+|   13 | Afan     |   25 |
+|   14 | Gubra    |   26 |
+|   15 | Naresh   |   28 |
++------+----------+------+
+5 rows in set (0.01 sec)
+
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> DELIMITER $$
+mysql> CREATE PROCEDURE get_people3(IN p_id SMALLINT) begin select * from peoplelist where id=p_id; end $$
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> DELIMITER :
+mysql> call get_people3(13):
++------+------+------+
+| id   | name | age  |
++------+------+------+
+|   13 | Afan |   25 |
++------+------+------+
+1 row in set (0.00 sec)
+
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> DELIMITER $$
+mysql> CREATE PROCEDURE people4(IN p_id SMALLINT,IN p_age INT)
+    -> begin
+    -> select * from peoplelist where id>p_id and age>p_age;
+    -> end $$
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> DELIMITER :
+mysql> call people4(14,26):
++------+--------+------+
+| id   | name   | age  |
++------+--------+------+
+|   15 | Naresh |   28 |
++------+--------+------+
+1 row in set (0.00 sec)
+
+Query OK, 0 rows affected (0.00 sec)
+ysql> DELIMITER :
+mysql> call people6_name(11,@p_name):
+Query OK, 1 row affected (0.00 sec)
+
+DELIMITER $$
+mysql> CREATE PROCEDURE people6_name(IN p_id SMALLINT,OUT p_name VARCHAR(15)) begin select name INTO p_name FROM peoplelist where id=p_id; END $$
+Query OK, 0 rows affected (0.02 sec)
+
+DELIMITER :
+mysql> call people6_name(11,@p_name):
+Query OK, 1 row affected (0.00 sec)
+
+
+mysql> DELIMITER :
+mysql> select @p_name:
++----------+
+| @p_name  |
++----------+
+| Saravana |
++----------+
+1 row in set (0.00 sec)
+
+mysql> 
+
+
+ysql> DELIMITER $$
+mysql> CREATE PROCEDURE people8(INOUT number INT) begin Select number * number INT
+O number; end $$
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> DELIMITER :
+mysql> SET @var=9:
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> Call people8(@var):
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select @var:
++------+
+| @var |
++------+
+|   81 |
++------+
+1 row in set (0.00 sec)
+

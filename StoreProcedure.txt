@@ -1,0 +1,55 @@
+mysql> use mydb;
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+mysql> select * from person;
++------+----------+---------+------+
+| id   | name     | country | age  |
++------+----------+---------+------+
+|    1 | Saravana | India   |   22 |
+|    2 | Kumar    | India   |   21 |
+|    3 | Nancy    | USA     |   40 |
+|    4 | Thilak   | Dubai   |   35 |
++------+----------+---------+------+
+4 rows in set (0.00 sec)
+
+mysql> DELIMITER :
+mysql> CALL count_people:
++-----------+
+| count(id) |
++-----------+
+|         4 |
++-----------+
+1 row in set (0.00 sec)
+
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> SHOW CREATE PROCEDURE count_people\G
+*************************** 1. row ***************************
+           Procedure: count_people
+            sql_mode: ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+    Create Procedure: CREATE DEFINER=`root`@`localhost` PROCEDURE `count_people`()
+begin
+select count(id)from person;
+end
+character_set_client: utf8mb4
+collation_connection: utf8mb4_0900_ai_ci
+  Database Collation: utf8mb4_0900_ai_ci
+1 row in set (0.00 sec)
+mysql> show procedure status like '%people%'\G
+*************************** 1. row ***************************
+                  Db: mydb
+                Name: count_people
+                Type: PROCEDURE
+             Definer: root@localhost
+            Modified: 2021-09-27 12:20:26
+             Created: 2021-09-27 12:20:26
+       Security_type: DEFINER
+             Comment: 
+character_set_client: utf8mb4
+collation_connection: utf8mb4_0900_ai_ci
+  Database Collation: utf8mb4_0900_ai_ci
+1 row in set (0.00 sec)
+
+
